@@ -10,25 +10,25 @@
 #include "cacnn.h"
 
 #define L2_SIZE 65536
-#define TRIALS  100
+#define TRIALS  1
 
-#define __C      3
-#define __K      3
-#define __W      252
-#define __H      252
-#define __R      5
-#define __S      5
-#define __SIGMAW 1
-#define __SIGMAH 1
+uint32_t __C;
+uint32_t __K;
+uint32_t __W;
+uint32_t __H;
+uint32_t __R;
+uint32_t __S;
+uint32_t __SIGMAW;
+uint32_t __SIGMAH;
 
-#define __C_B   3
-#define __K_B   3
-#define __W_B   252
-#define __H_B   28
-#define __RP_B  5
-#define __RPP_B 1
-#define __SP_B  5
-#define __SPP_B 1
+uint32_t __C_B;
+uint32_t __K_B;
+uint32_t __W_B;
+uint32_t __H_B;
+uint32_t __RP_B;
+uint32_t __RPP_B;
+uint32_t __SP_B;
+uint32_t __SPP_B;
 
 static inline
 uint64_t RDTSC_START ( void )
@@ -662,6 +662,7 @@ int time ( void )
 	uint64_t* data_cacnn  = (uint64_t*) malloc( sizeof(uint64_t) * TRIALS );
 	uint64_t* data_im2col = (uint64_t*) malloc( sizeof(uint64_t) * TRIALS );
 
+
 	// For each algorithm in {im2col, convolve_std, convolve_cacnn}: convolve_std
 	// Repeat TRIALS times
 	uint64_t a, b, c, d;
@@ -1092,185 +1093,32 @@ int count_misses ( void )
 
 int main ( int argc, const char* argv[] )
 {
-	//verify( argv[1], argv[2], argv[3], argv[4] );
-	time();
+	if ( argc < 17 )
+	{
+		fprintf( stderr, "Need to specifiy parameters.\n" );
+		return -1;
+	}
+
+	 __C       = atoi(argv[1]);
+	 __K       = atoi(argv[2]);
+	 __W       = atoi(argv[3]);
+	 __H       = atoi(argv[4]);
+	 __R       = atoi(argv[5]);
+	 __S       = atoi(argv[6]);
+	 __SIGMAW  = atoi(argv[7]);
+	 __SIGMAH  = atoi(argv[8]);
+
+	 __C_B     = atoi(argv[9]);
+	 __K_B     = atoi(argv[10]);
+	 __W_B     = atoi(argv[11]);
+	 __H_B     = atoi(argv[12]);
+	 __RP_B    = atoi(argv[13]);
+	 __RPP_B   = atoi(argv[14]);
+	 __SP_B    = atoi(argv[15]);
+	 __SPP_B   = atoi(argv[16]);
+
+//	verify( "data/dog.png", "ver_convolve.png", "ver_cacnn", "ver_im2col" );
+//	time();
 	count_misses();
 	return 0;
-/*	int ret = 0;
-	uint32_t i, j, k, f, iter;
-	volatile float checksum = 0.0;
-
-	// Init Perf Counter
-	pfcInit();
-
-	// Pin to core number 3
-	pfcPinThread(3);
-
-	if ( argc < 2 )
-	{
-		fprintf( stderr, "Need to specifiy an image file.\n" );
-		ret = -1;
-	}
-
-	// Read Image
-	uint32_t in_width;
-	uint32_t in_height;
-	uint32_t in_channels;
-	float*   in_image = NULL;
-
-
-	// Create Random* Filters (*Not random but fixed)
-	uint32_t filter_dim    = FILTERDIM;
-	uint32_t filter_count  = FILTERCNT;
-	float**  filters       = NULL;
-
-	if ( create_filters( &filters, filter_dim, filter_count, in_channels ) )
-	{
-		fprintf( stderr, "Failed to create filters.\n" );
-		ret = -1;
-		goto fail1;
-	}
-
-	// Create Junk Array
-	float* junk_l2 = (float*) malloc( 65536*4 );
-
-	if ( junk_l2 == NULL )
-	{
-		fprintf( stderr, "Failed to create junk array.\n" );
-		ret = -1;
-		goto fail2;
-	}
-
-	// Setup Perf Counters
-	PFC_CNT  CNT[7] = {0,0,0,0,0,0,0};
-	PFC_CFG  CFG[7] = {0,0,0,0,0,0,0};
-	CFG[3] = pfcParseCfg( "l2_rqsts.demand_data_rd_miss" );
-	CFG[4] = pfcParseCfg( "llc.miss" );
-	pfcWrCfgs(0, 7, CFG);
-	pfcWrCnts(0, 7, CNT);
-	memset(CNT, 0, sizeof(CNT));
-
-	// Convert image input to input matrix
-	uint32_t stride = 1;
-	uint32_t in_rows;
-	uint32_t in_cols;
-	float*   in_matrix = NULL;
-
-	if ( im2col( in_image, in_width, in_height, in_channels, filter_dim, filter_count, stride, &in_matrix, &in_rows, &in_cols ) )
-	{
-		fprintf( stderr, "Failed to convert image to matrix.\n" );
-		ret = -1;
-		goto fail2;
-	}
-
-	// Convert filters to kernel matrix
-	uint32_t ker_rows;
-	uint32_t ker_cols;
-	float*   ker_matrix = NULL;
-
-	if ( ker2col( filters, filter_dim, filter_count, in_channels, &ker_matrix, &ker_rows, &ker_cols ) )
-	{
-		fprintf( stderr, "Failed to convert kernels to matrix.\n" );
-		ret = -1;
-		goto fail3;
-	}
-
-	// Multiply matrices
-	uint32_t out_rows = in_rows;
-	uint32_t out_cols = ker_cols;
-	float*   out_matrix = NULL;
-
-	out_matrix = (float*) malloc( sizeof(float) * out_rows * out_cols );
-
-	if ( out_matrix == NULL )
-	{
-		ret = -ENOMEM;
-		goto fail4;
-	}
-
-	// BEGIN TEST
-	// uint64_t time = 0;
-	// uint64_t correction = fipc_test_time_get_correction();
-
-	for ( iter = 0; iter < 100; ++iter )
-	{
-
-		// TOUCH DATA
-		for ( j = 0; j < out_rows; ++j )
-			for ( i = 0; i < out_cols; ++i )
-				checksum += out_matrix[ j*out_cols + i ];
-		for ( j = 0; j < ker_rows; ++j )
-			for ( i = 0; i < ker_cols; ++i )
-				checksum += ker_matrix[ j*ker_cols + i ];
-
-		// CLEAR L2
-		for ( i = 0; i < 65536; ++i )
-			checksum += junk_l2[i];
-
-		// START TIME/CNT
-		PFCSTART(CNT);
-		// uint64_t start = RDTSC_START();
-
-		cblas_sgemm ( CblasColMajor, CblasNoTrans, CblasNoTrans,
-		              in_rows, ker_cols, ker_rows, 1.0f,
-		              in_matrix, in_rows,
-		              ker_matrix, ker_rows,
-		              0, out_matrix, in_rows );
-
-		// END TIME/CNT
-		PFCEND(CNT);
-		// uint64_t end = RDTSCP();
-		// time += end - start - correction;
-
-	// END TEST
-	}
-
-	// PRINT TIME/CNT
-	// printf("Avg cycles: %d\n", time/1000);
-	pfcRemoveBias(CNT, 1);
-	printf("avg l2 miss count=%d\n", CNT[3]/100 );
-	printf("avg l3 miss count=%d\n", CNT[4]/100 );
-
-	// Revert to image format
-	uint32_t col_width;
-	uint32_t col_height;
-	uint32_t col_channels;
-	float*   col_image = NULL;
-
-	if ( col2im( out_matrix, out_rows, out_cols, &col_image, &col_width, &col_height, &col_channels ) )
-	{
-		fprintf( stderr, "Failed to revert matrix format to image format.\n" );
-		ret = -1;
-		goto fail5;
-	}
-
-	// Print reverted image; if output file specified
-	if ( argc >= 3 )
-	{
-		if ( print_png ( argv[2], col_image, col_width, col_height, col_channels ) )
-		{
-			fprintf( stderr, "Failed to print reverted png.\n" );
-			ret = -1;
-			goto fail6;
-		}
-	}
-
-	// Clean up memory
-	fail6:
-		free( col_image );
-	fail5:
-		free( out_matrix );
-	fail4:
-		free( ker_matrix );
-	fail3:
-		free( in_matrix );
-	fail2:
-		for ( i = 0; i < filter_count; ++i )
-			free( filters[i] );
-		free( filters );
-	fail1:
-		free( in_image );
-
-	// Exit
-	return ret;*/
 }
