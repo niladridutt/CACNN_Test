@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <cblas.h>
 #include <errno.h>
 #include "lodepng.h"
-#include "libpfc.h"
+#include <cblas.h>
+//#include "libpfc.h"
 #include "constats.h"
 #include "convolve.h"
 #include "cacnn.h"
+#include "carma.h"
 
 #define L2_SIZE 65536
 #define TRIALS  1
@@ -492,11 +493,7 @@ int verify ( const char* in_filename, const char* out_filename, const char* out_
 		goto fail6;
 	}
 
-	cblas_sgemm ( CblasRowMajor, CblasNoTrans, CblasNoTrans,
-	              in_rows, ker_cols, ker_rows,
-	              1.0f, in_matrix, in_cols,
-	              ker_matrix, ker_cols, 0,
-	              out_matrix, ker_cols );
+	multiply( in_rows, ker_rows, ker_cols, in_matrix, ker_matrix, out_matrix, 100 );
 
 	uint32_t col_width;
 	uint32_t col_height;
@@ -654,8 +651,8 @@ int time ( void )
 	uint64_t correction = fipc_test_time_get_correction();
 
 	// Pin thread to core
-	pfcInit();			// Init Perf Counter
-	pfcPinThread(3);	// Pin to core number 3
+//	pfcInit();			// Init Perf Counter
+//	pfcPinThread(3);	// Pin to core number 3
 
 	// Create Data Space
 	uint64_t* data_std    = (uint64_t*) malloc( sizeof(uint64_t) * TRIALS );
@@ -753,11 +750,8 @@ int time ( void )
 		volatile uint64_t start = RDTSC_START();
 
 		// Run Algorithm
-		cblas_sgemm ( CblasRowMajor, CblasNoTrans, CblasNoTrans,
-		              in_rows, ker_cols, ker_rows,
-		              1.0f, in_matrix, in_cols,
-		              ker_matrix, ker_cols, 0,
-		              out_matrix, ker_cols );
+
+		multiply( in_rows, ker_rows, ker_cols, in_matrix, ker_matrix, out_matrix, 10 );
 
 		// Stop time
 		volatile uint64_t end = RDTSCP();
@@ -795,7 +789,7 @@ int time ( void )
 	fail0:
 		return ret;
 }
-
+/**
 int count_misses ( void )
 {
 	// Test Prep
@@ -1034,11 +1028,7 @@ int count_misses ( void )
 		PFCSTART(CNT);
 
 		// Run Algorithm
-		cblas_sgemm ( CblasRowMajor, CblasNoTrans, CblasNoTrans,
-		              in_rows, ker_cols, ker_rows,
-		              1.0f, in_matrix, in_cols,
-		              ker_matrix, ker_cols, 0,
-		              out_matrix, ker_cols );
+		multiply( in_rows, ker_rows, ker_cols, in_matrix, ker_matrix, out_matrix, 10 );
 
 		// Stop Perf Counter
 		PFCEND(CNT);
@@ -1090,7 +1080,7 @@ int count_misses ( void )
 	fail0:
 		return ret;
 }
-
+*/
 int main ( int argc, const char* argv[] )
 {
 	if ( argc < 17 )
@@ -1117,8 +1107,8 @@ int main ( int argc, const char* argv[] )
 	 __SP_B    = atoi(argv[15]);
 	 __SPP_B   = atoi(argv[16]);
 
-//	verify( "data/dog.png", "ver_convolve.png", "ver_cacnn", "ver_im2col" );
+	verify( "data/dog.png", "ver_convolve.png", "ver_cacnn.png", "ver_carma.png" );
 //	time();
-	count_misses();
+//	count_misses();
 	return 0;
 }
