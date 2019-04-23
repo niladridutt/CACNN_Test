@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <errno.h>
 #include "lodepng.h"
-#include "stdafx.h"
 #include"mkl.h"
 //#include "libpfc.h"
 #include "constats.h"
