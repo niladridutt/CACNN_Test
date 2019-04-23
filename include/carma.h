@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
-#include <cblas.h>
+#include"mkl.h"
 
 // CARMA
 void multiply ( int m, int k, int n, float *A, float *B, float *C, int max_depth );
