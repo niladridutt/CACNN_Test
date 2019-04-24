@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include <errno.h>
 #include "lodepng.h"
-#include"mkl.h"
+//#include"mkl.h"
+#include <cblas.h>
 //#include "libpfc.h"
 #include "constats.h"
 #include "convolve.h"
