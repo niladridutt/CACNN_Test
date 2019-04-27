@@ -11,6 +11,7 @@
 #include "cacnn.h"
 #include "carma.h"
 
+
 #define L2_SIZE 65536
 #define TRIALS  1
 
@@ -433,9 +434,13 @@ int verify ( const char* in_filename, const char* out_filename, const char* out_
 
 	// Verify convolve_std
 	memset( out, 0, sizeof(float) * out_channels * out_height * out_width );
-
-	convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
-
+	clock_t t; 
+    t = clock(); 
+    convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
+    t = clock() - t; 
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds 
+    printf("fun() took %f seconds to execute convolve std\n", time_taken); 
+	
 	if ( print_png( out_filename, out, out_width, out_height, out_channels ) )
 	{
 		fprintf( stderr, "Failed to print png.\n" );
@@ -445,10 +450,13 @@ int verify ( const char* in_filename, const char* out_filename, const char* out_
 
 	// Verify convolve cacnn
 	memset( out, 0, sizeof(float) * out_channels * out_height * out_width );
-
-	convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
+	t = clock(); 
+    convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
 	                out_height, filter_width, filter_height, __SIGMAW, __SIGMAH,
 	                __C_B, __K_B, __W_B, __H_B, __RP_B, __RPP_B, __SP_B, __SPP_B );
+	t = clock() - t; 
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds 
+    printf("fun() took %f seconds to execute convolve cacnn\n", time_taken); 
 
 	if ( print_png( out_filename2, out, out_width, out_height, out_channels ) )
 	{
