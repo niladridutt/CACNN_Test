@@ -6,7 +6,7 @@
 #include <errno.h>
 
 // Standard Convolution
-int convolve_cacnn
+int convolve_pcacnn
 (
 	float* in, float* out, float** filters, uint32_t C, uint32_t K, uint32_t W,
 	uint32_t H, uint32_t R, uint32_t S, uint32_t sigmaW, uint32_t sigmaH,
