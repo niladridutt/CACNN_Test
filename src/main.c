@@ -690,7 +690,7 @@ int time ( void )
 		t = clock(); 
     		convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
 		t = clock() - t; 
-   	 	double time_taken = ((double)t)///CLOCKS_PER_SEC; // in seconds 
+   	 	double time_taken = ((double)t);///CLOCKS_PER_SEC; // in seconds 
     		printf("took %f seconds to execute convolve cacnn\n", time_taken); 
 		
 		// Stop time
