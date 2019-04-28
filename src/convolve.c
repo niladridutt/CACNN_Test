@@ -12,10 +12,10 @@ int convolve_std
 	uint32_t c, k, w, h, r, s;
 	uint32_t in_H = sigmaH*(H - 1) + S;
 	uint32_t in_W = sigmaW*(W - 1) + R;
-	#pragma opm parallel for
+	//#pragma opm parallel for
 	for ( c = 0; c < C; c++ )
 	{
-		#pragma opm parallel for
+		//#pragma opm parallel for
 		for ( k = 0; k < K; k++ )
 		{
 			for ( w = 0; w < W; w++ )
