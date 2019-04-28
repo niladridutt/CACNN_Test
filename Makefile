@@ -1,7 +1,7 @@
 all:
 	mkdir -p build
 	mkdir -p lib
-	gcc src/cacnn.c -O3 -Iinclude -c -o -fopenmp build/cacnn.o
+	gcc src/cacnn.c -O3 -Iinclude -c -o build/cacnn.o
 	gcc src/convolve.c -O3 -Iinclude -c -o build/convolve.o
 	gcc src/carma.c -O3 -Iinclude -c -o build/carma.o -lcblas
 	ar rcs lib/libcacnn.a build/cacnn.o
