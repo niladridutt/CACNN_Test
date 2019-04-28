@@ -434,12 +434,7 @@ int verify ( const char* in_filename, const char* out_filename, const char* out_
 
 	// Verify convolve_std
 	memset( out, 0, sizeof(float) * out_channels * out_height * out_width );
-	clock_t t; 
-    t = clock(); 
     convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
-    t = clock() - t; 
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds 
-    printf("fun() took %f seconds to execute convolve std\n", time_taken); 
 	
 	if ( print_png( out_filename, out, out_width, out_height, out_channels ) )
 	{
@@ -450,13 +445,9 @@ int verify ( const char* in_filename, const char* out_filename, const char* out_
 
 	// Verify convolve cacnn
 	memset( out, 0, sizeof(float) * out_channels * out_height * out_width );
-	t = clock(); 
     convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
 	                out_height, filter_width, filter_height, __SIGMAW, __SIGMAH,
 	                __C_B, __K_B, __W_B, __H_B, __RP_B, __RPP_B, __SP_B, __SPP_B );
-	t = clock() - t; 
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds 
-    printf("fun() took %f seconds to execute convolve cacnn\n", time_taken); 
 
 	if ( print_png( out_filename2, out, out_width, out_height, out_channels ) )
 	{
@@ -696,6 +687,7 @@ int time ( void )
 		volatile uint64_t start = RDTSC_START();
 
 		// Run Algorithm
+		
 		convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
 
 		// Stop time
@@ -1092,6 +1084,7 @@ int count_misses ( void )
 */
 int main ( int argc, const char* argv[] )
 {
+	printf("dgydgyd \n");
 	if ( argc < 17 )
 	{
 		fprintf( stderr, "Need to specifiy parameters.\n" );
@@ -1115,9 +1108,9 @@ int main ( int argc, const char* argv[] )
 	 __RPP_B   = atoi(argv[14]);
 	 __SP_B    = atoi(argv[15]);
 	 __SPP_B   = atoi(argv[16]);
-
-	verify( "data/dog.png", "ver_convolve.png", "ver_cacnn.png", "ver_carma.png" );
-//	time();
+	
+	//verify( "data/dog.png", "ver_convolve.png", "ver_cacnn.png", "ver_carma.png" );
+	time();
 //	count_misses();
 	return 0;
 }
