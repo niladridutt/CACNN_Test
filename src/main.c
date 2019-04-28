@@ -9,7 +9,6 @@
 #include "constats.h"
 #include "convolve.h"
 #include "cacnn.h"
-#include "pcacnn.h"
 #include "carma.h"
 
 
@@ -729,40 +728,6 @@ int time ( void )
 		volatile uint64_t end = RDTSCP();
 		data_cacnn[i] = (end - start) - correction;
 	}
-	// For each algorithm in {im2col, convolve_std, convolve_cacnn}: convolve_pcacnn
-	for ( i = 0; i < TRIALS; ++i )
-	{
-		// Load All Data (touch input, zero output)
-		for ( c = 0; c < in_channels; ++c )
-			for ( b = 0; b < in_height; ++b )
-				for ( a = 0; a < in_width; ++a )
-					checksum += in[ c*(in_width*in_height) + b*(in_width) + a ];
-
-		for ( d = 0; d < filter_count; ++d )
-			for ( c = 0; c < filter_channels; ++c )
-				for ( b = 0; b < filter_height; ++b )
-					for ( a = 0; a < filter_width; ++a )
-						checksum += filters[d][ c*(filter_width*filter_height) + a*filter_width + b ];
-
-		memset( out, 0, out_channels * out_width * out_height );
-
-		// Load Junk Data (clear L2)
-		for ( a = 0; a < L2_SIZE; ++a )
-			checksum += junk_l2[a];
-
-		// Start time
-		volatile uint64_t start = RDTSC_START();
-
-		// Run Algorithm
-		convolve_pcacnn( in, out, filters, in_channels, out_channels, out_width,
-	    	            out_height, filter_width, filter_height, __SIGMAW, __SIGMAH,
-	        	        __C_B, __K_B, __W_B, __H_B, __RP_B, __RPP_B, __SP_B, __SPP_B );
-
-		// Stop time
-		volatile uint64_t end = RDTSCP();
-		data_pcacnn[i] = (end - start) - correction;
-	}
-
 	// For each algorithm in {im2col, convolve_std, convolve_cacnn}: im2col
 	for ( i = 0; i < TRIALS; ++i )
 	{
@@ -799,9 +764,6 @@ int time ( void )
 
 	printf( "Communication Avoiding Convolution Timing (Cycles)\n" );
 	constats_get_and_print_stats( data_cacnn, TRIALS );
-	
-	printf( "Parallel Communication Avoiding Convolution Timing (Cycles)\n" );
-	constats_get_and_print_stats( data_pcacnn, TRIALS );
 
 	printf( "Im2Col Matrix Multiplication Timing (Cycles)\n" );
 	constats_get_and_print_stats( data_im2col, TRIALS );
@@ -809,7 +771,6 @@ int time ( void )
 	fail7:
 		free( data_std );
 		free( data_cacnn );
-		free( data_pcacnn );
 		free( data_im2col );
 	fail6:
 		free( out_matrix );
