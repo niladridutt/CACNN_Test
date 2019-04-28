@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
+#include <omp.h>
 
 // Standard Convolution
 int convolve_cacnn
