@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <errno.h>
+#include <omp.h>
 #include "lodepng.h"
 //#include"mkl.h"
 #include <cblas.h>
@@ -10,7 +11,6 @@
 #include "convolve.h"
 #include "cacnn.h"
 #include "carma.h"
-
 
 #define L2_SIZE 65536
 #define TRIALS  1
