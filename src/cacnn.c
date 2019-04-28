@@ -1,4 +1,5 @@
 #include "cacnn.h"
+#include "omp.h"
 
 // Communication Avoiding Convolution
 int convolve_cacnn
@@ -20,8 +21,10 @@ int convolve_cacnn
 	uint32_t in_W = sigmaW*(W - 1) + R;
 
 	// Blocking
+	#pragma omp parallel for
 	for ( c_b = 0; c_b < C; c_b += C_block )
 	{
+		#pragma omp parallel for
 		for ( k_b = 0; k_b < K; k_b += K_block )
 		{
 			for ( w_b = 0; w_b < W; w_b += W_block )
@@ -38,8 +41,10 @@ int convolve_cacnn
 								{
 
 	// Piecing
+	//#pragma omp parallel for
 	for ( c_p = 0; c_p < C_block; c_p += 1 )
 	{
+		//#pragma omp parallel for
 		for ( k_p = 0; k_p < K_block; k_p += 1 )
 		{
 			for ( w_p = 0; w_p < W_block; w_p += 1 )
@@ -52,6 +57,7 @@ int convolve_cacnn
 						{
 							for ( sp_p = 0; sp_p < SP_block; sp_p += 1 )
 							{
+								//#pragma omp parallel for reduction(+:u,v)
 								for ( spp_p = 0; spp_p < SPP_block; spp_p += 1 )
 								{
 									c   = c_b   + c_p;
