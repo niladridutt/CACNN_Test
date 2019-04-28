@@ -1084,7 +1084,7 @@ int count_misses ( void )
 */
 int main ( int argc, const char* argv[] )
 {
-	printf("dgydgyd \n");
+	printf("hello \n");
 	if ( argc < 17 )
 	{
 		fprintf( stderr, "Need to specifiy parameters.\n" );
