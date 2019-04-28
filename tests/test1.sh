@@ -6,8 +6,8 @@ __W=55
 __H=55
 __R=11
 __S=11
-__SIGMAW=2
-__SIGMAH=2
+__SIGMAW=1
+__SIGMAH=1
 
 __C_B=3
 __K_B=3
