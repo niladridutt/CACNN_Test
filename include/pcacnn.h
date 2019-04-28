@@ -1,5 +1,5 @@
-#ifndef CACNN_CACNN_TEST_LIB_
-#define CACNN_CACNN_TEST_LIB_
+#ifndef CACNN_PCACNN_TEST_LIB_
+#define CACNN_PCACNN_TEST_LIB_
 
 #include <stdlib.h>
 #include <stdint.h>
