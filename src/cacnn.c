@@ -41,22 +41,22 @@ int convolve_cacnn
 								{
 
 	// Piecing
-	for ( c_p = 0; c_p < C_block; c_p += 1 )
+	for ( c_p = 0; c_p<C_block && (c_b+c_p)<C; c_p += 1 )
 	{
-		for ( k_p = 0; k_p < K_block; k_p += 1 )
+		for ( k_p = 0; k_p<K_block && (k_b+k_p)<K; k_p += 1 )
 		{
-			for ( w_p = 0; w_p < W_block; w_p += 1 )
+			for ( w_p = 0; w_p<W_block && (w_b+w_p)<W; w_p += 1 )
 			{
-				for ( h_p = 0; h_p < H_block; h_p += 1 )
+				for ( h_p = 0; h_p<H_block && (h_b+h_p)<H; h_p += 1 )
 				{
-					for ( rp_p = 0; rp_p < RP_block; rp_p += 1 )
+					for ( rp_p = 0; rp_p<RP_block && (rp_b+rp_p)<r_bound; rp_p += 1 )
 					{	
-						for ( rpp_p = 0; rpp_p < RPP_block; rpp_p += 1 )
+						for ( rpp_p = 0; rpp_p<RP_block && (rpp_b+rpp_p)<sigmaW; rpp_p += 1 )
 						{
-							for ( sp_p = 0; sp_p < SP_block; sp_p += 1 )
+							for ( sp_p = 0; sp_p<SP_block && (sp_b+sp_p)<s_bound; sp_p += 1 )
 							{
 								//#pragma omp parallel for reduction(+:u,v)
-								for ( spp_p = 0; spp_p < SPP_block; spp_p += 1 )
+								for ( spp_p = 0; spp_p<SPP_block && (spp_b+spp_p)<sigmaH; spp_p += 1 )
 								{
 									c   = c_b   + c_p;
 									k   = k_b   + k_p;
