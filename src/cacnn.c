@@ -21,22 +21,28 @@ int convolve_cacnn
 	uint32_t in_W = sigmaW*(W - 1) + R;
 
 	// Blocking
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for ( c_b = 0; c_b < C; c_b += C_block )
 	{
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for ( k_b = 0; k_b < K; k_b += K_block )
 		{
+			#pragma omp parallel for
 			for ( w_b = 0; w_b < W; w_b += W_block )
 			{
+				#pragma omp parallel for
 				for ( h_b = 0; h_b < H; h_b += H_block )
 				{
+					#pragma omp parallel for
 					for ( rp_b = 0; rp_b < r_bound; rp_b += RP_block )
 					{
+						#pragma omp parallel for
 						for ( rpp_b = 0; rpp_b < sigmaW; rpp_b += RPP_block )
 						{
+							#pragma omp parallel for
 							for ( sp_b = 0; sp_b < s_bound; sp_b += SP_block )
 							{
+								#pragma omp parallel for
 								for ( spp_b = 0; spp_b < sigmaH; spp_b += SPP_block )
 								{
 
@@ -47,17 +53,23 @@ int convolve_cacnn
 		#pragma omp parallel for
 		for ( k_p = 0; k_p < K_block; k_p += 1 )
 		{
+			#pragma omp parallel for
 			for ( w_p = 0; w_p < W_block; w_p += 1 )
 			{
+				#pragma omp parallel for
 				for ( h_p = 0; h_p < H_block; h_p += 1 )
 				{
+					#pragma omp parallel for
 					for ( rp_p = 0; rp_p < RP_block; rp_p += 1 )
-					{
+					{	
+						#pragma omp parallel for
 						for ( rpp_p = 0; rpp_p < RPP_block; rpp_p += 1 )
 						{
+							#pragma omp parallel for
 							for ( sp_p = 0; sp_p < SP_block; sp_p += 1 )
 							{
 								//#pragma omp parallel for reduction(+:u,v)
+								#pragma omp parallel for
 								for ( spp_p = 0; spp_p < SPP_block; spp_p += 1 )
 								{
 									c   = c_b   + c_p;
