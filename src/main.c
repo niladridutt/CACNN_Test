@@ -13,7 +13,7 @@
 #include "carma.h"
 
 #define L2_SIZE 65536
-#define TRIALS  10
+#define TRIALS  1
 
 uint32_t __C;
 uint32_t __K;
@@ -688,8 +688,12 @@ int time ( void )
 		volatile uint64_t start = RDTSC_START();
 
 		// Run Algorithm
-    		convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
-		
+		//#pragma omp parallel for
+		for ( b = 0; b < 10; ++b )
+		{
+			convolve_std( in, out, filters, in_channels, out_channels, out_width, out_height, filter_width, filter_height, __SIGMAW, __SIGMAH );
+
+		}		
 		// Stop time
 		volatile uint64_t end = RDTSCP();
 		data_std[i] = (end - start) - correction;
@@ -720,9 +724,13 @@ int time ( void )
 		volatile uint64_t start = RDTSC_START();
 
 		// Run Algorithm
-		convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
-	    	            out_height, filter_width, filter_height, __SIGMAW, __SIGMAH,
-	        	        __C_B, __K_B, __W_B, __H_B, __RP_B, __RPP_B, __SP_B, __SPP_B );
+		#pragma omp parallel for
+		for ( b = 0; b < 10; ++b )
+		{
+			convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
+							out_height, filter_width, filter_height, __SIGMAW, __SIGMAH,
+							__C_B, __K_B, __W_B, __H_B, __RP_B, __RPP_B, __SP_B, __SPP_B );
+		}
 
 		// Stop time
 		volatile uint64_t end = RDTSCP();
