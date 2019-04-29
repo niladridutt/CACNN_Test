@@ -19,4 +19,3 @@ __SP_B=11
 __SPP_B=1
 
 ./measure $__C $__K $__W $__H $__R $__S $__SIGMAW $__SIGMAH $__C_B $__K_B $__W_B $__H_B $__RP_B $__RPP_B $__SP_B $__SPP_B;
-{X, 1, 1, 11, 6, 11, 1, 6, 1}
