@@ -13,7 +13,7 @@
 #include "carma.h"
 
 #define L2_SIZE 65536
-#define TRIALS  1
+#define TRIALS  10
 
 uint32_t __C;
 uint32_t __K;
