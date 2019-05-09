@@ -2,7 +2,7 @@ all:
 	mkdir -p build
 	mkdir -p lib
 	gcc -fopenmp src/cacnn.c -O3 -Iinclude -c -o build/cacnn.o
-	export OMP_NUM_THREADS=8
+	export OMP_NUM_THREADS=2
 	gcc src/convolve.c -O3 -Iinclude -c -o build/convolve.o
 	gcc src/carma.c -O3 -Iinclude -c -o build/carma.o -lcblas
 	ar rcs lib/libcacnn.a build/cacnn.o
