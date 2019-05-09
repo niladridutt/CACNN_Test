@@ -724,7 +724,7 @@ int time ( void )
 		volatile uint64_t start = RDTSC_START();
 
 		// Run Algorithm
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for ( b = 0; b < 1; ++b )
 		{
 			convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
