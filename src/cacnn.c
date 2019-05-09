@@ -21,7 +21,7 @@ int convolve_cacnn
 	uint32_t in_W = sigmaW*(W - 1) + R;
 
 	// Blocking
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for ( c_b = 0; c_b < C; c_b += C_block )
 	{
 		//#pragma omp parallel for
