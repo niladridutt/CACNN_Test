@@ -725,7 +725,7 @@ int time ( void )
 
 		// Run Algorithm
 		#pragma omp parallel for
-		for ( b = 0; b < 10; ++b )
+		for ( b = 0; b < 100; ++b )
 		{
 			convolve_cacnn( in, out, filters, in_channels, out_channels, out_width,
 							out_height, filter_width, filter_height, __SIGMAW, __SIGMAH,
